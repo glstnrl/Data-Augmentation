@@ -1,1 +1,65 @@
+import tensorflow as tf
+import tensorflow
 
+from tensorflow import keras
+from keras.layers import Dense
+
+tf.keras.applications.VGG16(
+    include_top=True,
+    weights="imagenet",
+    input_tensor=None,
+    input_shape=None,
+    pooling=None,
+    classes=1000,
+    classifier_activation="softmax",
+)
+from keras.applications.vgg16 import VGG16
+from matplotlib import pyplot
+
+model = VGG16()
+
+for i in range(len(model.layers)):
+	layer = model.layers[i]
+
+	if 'conv' not in layer.name:
+		continue
+	print(i, layer.name, layer.output.shape)
+
+model = Model(inputs=model.inputs, outputs=model.layers[1].output)
+img = load_img('arabalar.jpg', target_size=(224, 224))
+img = img_to_array(img)
+
+img = expand_dims(img, axis=0)
+
+img = preprocess_input(img)
+
+feature_maps = model.predict(img)
+
+
+# plot all 64 maps in an 8x8 squares
+square = 8
+ix = 1
+for _ in range(square):
+	for _ in range(square):
+		# specify subplot and turn of axis
+		ax = pyplot.subplot(square, square, ix)
+		ax.set_xticks([])
+		ax.set_yticks([])
+		# plot filter channel in grayscale
+		pyplot.imshow(feature_maps[0, :, :, ix-1], cmap='gray')
+		ix += 1
+
+# plot all 64 maps in an 8x8 squares
+square = 8
+ix = 1
+for _ in range(square):
+	for _ in range(square):
+		# specify subplot and turn of axis
+		ax = pyplot.subplot(square, square, ix)
+		ax.set_xticks([])
+		ax.set_yticks([])
+		# plot filter channel in grayscale
+		pyplot.imshow(feature_maps[0, :, :, ix-1], cmap='gray')
+		ix += 1
+# show the figure
+pyplot.show()
